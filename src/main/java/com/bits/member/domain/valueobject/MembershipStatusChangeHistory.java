@@ -1,6 +1,6 @@
 package com.bits.member.domain.valueobject;
 
-import com.bits.ddd.shared.domain.enums.DomainStatus;
+import com.bits.ddd.shared.domain.value.DomainStatus;
 import java.time.LocalDate;
 
 public record MembershipStatusChangeHistory(
