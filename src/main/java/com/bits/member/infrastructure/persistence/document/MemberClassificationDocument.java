@@ -1,20 +1,49 @@
 package com.bits.member.infrastructure.persistence.document;
 
-import com.bits.ddd.shared.persistence.document.BaseEntity;
+import com.bits.ddd.annotation.MongoSourceData;
+import com.bits.ddd.domain.sourcedata.SourceData;
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 @Document(collection = "member_classification_snapshots")
-public record MemberClassificationDocument(
-        @Id String id,
-        String categoryName,
-        Integer ageFrom,
-        Integer ageTo,
-        Boolean allowedLoan,
-        Boolean hasSavings,
-        Boolean disallowMemberFees,
-        Integer domainStatusId,
-        Boolean active,
-        LocalDateTime lastEventTimestamp) implements BaseEntity<String> {
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@MongoSourceData
+public class MemberClassificationDocument extends SourceData<String> {
+
+    @Id
+    private String id;
+
+    private String categoryName;
+    private Integer ageFrom;
+    private Integer ageTo;
+    private Boolean isAllowedLoan;
+    private Boolean hasSavings;
+    private Boolean hasRMG;
+    private Boolean hasERMG;
+    private Boolean isDisallowMemberFees;
+    private Long domainStatusId;
+    private Long createdBy;
+    private Long updatedBy;
+    private LocalDateTime dateCreated;
+    private LocalDateTime lastUpdated;
+    private Boolean allowedLoan;
+    private Boolean disallowMemberFees;
+    private Boolean active;
+
+    private LocalDateTime lastEventTimestamp;
+
+    @Override
+    public String id() {
+        return id;
+    }
 }
