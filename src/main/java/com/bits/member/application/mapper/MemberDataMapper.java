@@ -22,22 +22,36 @@ public final class MemberDataMapper {
             LocalDate businessDate,
             String memberNo) {
         PersonalInfo personalInfo = new PersonalInfo(
-                command.getGenderId(),
-                command.getMaritalStatusId(),
-                command.getDateOfBirth(),
-                command.getOccupationId(),
-                command.getFatherName(),
-                command.getMotherName(),
-                command.getSpouseName(),
-                null,
+                null, // salutationId
                 command.getNationalId(),
                 command.getSmartCardId(),
                 command.getPassportNo(),
                 command.getDrivingLicenseNo(),
                 command.getPhotoIdNo(),
+                command.getGenderId(),
+                command.getMaritalStatusId(),
+                null, // age
+                6,    // biometricStatus
+                command.getOccupationId(),
+                command.getDateOfBirth(),
+                command.getFatherName(),
+                command.getMotherName(),
+                command.getSpouseName(),
+                null, // spouseDateOfBirth
+                null, // spNationalId
+                null, // spSmartCardId
+                null, // spPassportNo
+                null, // spPhotoIdNo
+                null, // bikashWalletNo
+                null, // rocketWalletNo
+                null, // referralInfoId
+                null, // photoReference
                 command.getOtherIdTypeId(),
                 command.getOtherIdTypeNo(),
-                null);
+                null, // expiryDate
+                null, // placeOfIssuingCountry
+                null  // isPersonWithDisability
+        );
         ContactInfo contactInfo = new ContactInfo(
                 command.getContactNo(),
                 null,
