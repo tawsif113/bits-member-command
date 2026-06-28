@@ -73,7 +73,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             String memberNo = memberNumberGenerator.nextMemberNo(command, sourceData);
             LocalDate businessDate = sourceData.getPhysicalOfficeInfo() == null
                     ? null
-                    : sourceData.getPhysicalOfficeInfo().businessDate();
+                    : sourceData.getPhysicalOfficeInfo().getBusinessDate();
 
             MemberCreationData creationData = MemberDataMapper.toCreationData(
                     command, sourceData, deduplicationResult, businessDate, memberNo);

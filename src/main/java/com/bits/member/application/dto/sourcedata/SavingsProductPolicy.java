@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -29,55 +31,4 @@ public class SavingsProductPolicy {
     private LocalDateTime dateCreated;
     private LocalDateTime lastUpdated;
     private Boolean active;
-
-    public String id() {
-        return id;
-    }
-
-    public Integer noOfAllowedWithdrawal() {
-        return noOfAllowedWithdrawal;
-    }
-    public BigDecimal minimumBalance() {
-        return minimumBalance;
-    }
-    public BigDecimal minDepositAmount() {
-        return minDepositAmount;
-    }
-    public String calculationFrequency() {
-        return calculationFrequency;
-    }
-    public String provisionFrequency() {
-        return provisionFrequency;
-    }
-    public String calculationMethod() {
-        return calculationMethod;
-    }
-    public String creditFrequency() {
-        return creditFrequency;
-    }
-    public Long policyRepaymentsPlanId() {
-        return policyRepaymentsPlanId;
-    }
-    public Long savingsProductId() {
-        return savingsProductId;
-    }
-    public Long domainStatusId() {
-        return domainStatusId;
-    }
-    public Long createdBy() {
-        return createdBy;
-    }
-    public Long updatedBy() {
-        return updatedBy;
-    }
-    public LocalDateTime dateCreated() {
-        return dateCreated;
-    }
-    public LocalDateTime lastUpdated() {
-        return lastUpdated;
-    }
-    public Boolean active() {
-        return active;
-    }
-
 }

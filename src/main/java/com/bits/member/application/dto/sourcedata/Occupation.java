@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,25 +21,4 @@ public class Occupation {
     private String occupationCode;
     private String occupationName;
     private Boolean active;
-
-    public String id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-    public String description() {
-        return description;
-    }
-    public String occupationCode() {
-        return occupationCode;
-    }
-    public String occupationName() {
-        return occupationName;
-    }
-    public Boolean active() {
-        return active;
-    }
-
 }

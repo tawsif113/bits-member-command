@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,31 +23,4 @@ public class Relationship {
     private Boolean relative;
     private Boolean spouseRelationship;
     private Boolean active;
-
-    public String id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-    public String description() {
-        return description;
-    }
-    public Boolean isRelative() {
-        return isRelative;
-    }
-    public String statusId() {
-        return statusId;
-    }
-    public Boolean relative() {
-        return relative;
-    }
-    public Boolean spouseRelationship() {
-        return spouseRelationship;
-    }
-    public Boolean active() {
-        return active;
-    }
-
 }

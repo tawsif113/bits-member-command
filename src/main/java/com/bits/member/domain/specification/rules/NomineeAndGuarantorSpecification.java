@@ -36,10 +36,10 @@ public class NomineeAndGuarantorSpecification implements Specification<MemberVal
         spouseRelIds.add("20"); // fallback standard spouse relationship id
         if (context.sourceData() != null && context.sourceData().getRelationships() != null) {
             for (Relationship rel : context.sourceData().getRelationships()) {
-                if (rel.active()) {
-                    validRelIds.add(rel.id());
-                    if (Boolean.TRUE.equals(rel.spouseRelationship())) {
-                        spouseRelIds.add(rel.id());
+                if (Boolean.TRUE.equals(rel.getActive())) {
+                    validRelIds.add(rel.getId());
+                    if (Boolean.TRUE.equals(rel.getSpouseRelationship())) {
+                        spouseRelIds.add(rel.getId());
                     }
                 }
             }

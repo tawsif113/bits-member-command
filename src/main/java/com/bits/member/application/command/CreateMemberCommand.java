@@ -20,9 +20,9 @@ public class CreateMemberCommand extends CommandMessage {
     private final String savingsProductId;
     private final BigDecimal targetAmount;
     private final LocalDate applicationDate;
-    private final String fName;
-    private final String mName;
-    private final String lName;
+    private final String firstName;
+    private final String middleName;
+    private final String lastName;
     private final String genderId;
     private final String maritalStatusId;
     private final LocalDate dateOfBirth;
@@ -65,9 +65,9 @@ public class CreateMemberCommand extends CommandMessage {
             String savingsProductId,
             BigDecimal targetAmount,
             LocalDate applicationDate,
-            String fName,
-            String mName,
-            String lName,
+            String firstName,
+            String middleName,
+            String lastName,
             String genderId,
             String maritalStatusId,
             LocalDate dateOfBirth,
@@ -108,9 +108,9 @@ public class CreateMemberCommand extends CommandMessage {
         this.savingsProductId = savingsProductId;
         this.targetAmount = targetAmount;
         this.applicationDate = applicationDate;
-        this.fName = fName;
-        this.mName = mName;
-        this.lName = lName;
+        this.firstName = firstName;
+        this.middleName = middleName;
+        this.lastName = lastName;
         this.genderId = genderId;
         this.maritalStatusId = maritalStatusId;
         this.dateOfBirth = dateOfBirth;

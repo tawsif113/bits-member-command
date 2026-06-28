@@ -37,8 +37,8 @@ public class SavingsProductSpecification implements Specification<MemberValidati
 
         // 2. Frequency Check
         ProjectPolicyInfo policy = context.sourceData().getProjectPolicyInfo();
-        if (policy != null && policy.collectionFrequency() != null && product.collectionFrequency() != null) {
-            if (!product.collectionFrequency().equalsIgnoreCase(policy.collectionFrequency())) {
+        if (policy != null && policy.getCollectionFrequency() != null && product.getCollectionFrequency() != null) {
+            if (!product.getCollectionFrequency().equalsIgnoreCase(policy.getCollectionFrequency())) {
                 errors.put(MemberMessageKey.SAVINGS_PRODUCT.getKey(), LocalizedMessage.builder()
                         .key("member.savings.product.frequency.invalid")
                         .build());
@@ -47,8 +47,8 @@ public class SavingsProductSpecification implements Specification<MemberValidati
 
         // 3. Target amount floor check
         SavingsProductPolicy productPolicy = context.sourceData().getSavingsProductPolicy();
-        if (productPolicy != null && productPolicy.minDepositAmount() != null && aggregate.getTargetAmount() != null) {
-            BigDecimal minInstallment = productPolicy.minDepositAmount();
+        if (productPolicy != null && productPolicy.getMinDepositAmount() != null && aggregate.getTargetAmount() != null) {
+            BigDecimal minInstallment = productPolicy.getMinDepositAmount();
             if (aggregate.getTargetAmount().compareTo(minInstallment) < 0) {
                 errors.put(MemberMessageKey.TARGET_AMOUNT.getKey(), LocalizedMessage.builder()
                         .key("member.target.amount.below.minimum")

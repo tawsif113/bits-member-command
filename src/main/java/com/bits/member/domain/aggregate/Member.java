@@ -44,9 +44,9 @@ public class Member extends AggregateRoot<String> {
     private String referenceNo;
     private String groupRefNo;
     private String memberName;
-    private String fName;
-    private String mName;
-    private String lName;
+    private String firstName;
+    private String middleName;
+    private String lastName;
     private LocalDate applicationDate;
     private String surveyReportNo;
     private LocalDate membershipDate;
@@ -105,10 +105,10 @@ public class Member extends AggregateRoot<String> {
         member.groupInfoId = creationData.groupInfoId();
         member.memberNo = creationData.memberNo();
         
-        member.fName = creationData.fName();
-        member.mName = creationData.mName();
-        member.lName = creationData.lName();
-        member.memberName = buildFullName(creationData.fName(), creationData.mName(), creationData.lName());
+        member.firstName = creationData.firstName();
+        member.middleName = creationData.middleName();
+        member.lastName = creationData.lastName();
+        member.memberName = buildFullName(creationData.firstName(), creationData.middleName(), creationData.lastName());
         
         member.applicationDate = creationData.applicationDate();
         member.membershipDate = creationData.businessDate();
@@ -196,18 +196,18 @@ public class Member extends AggregateRoot<String> {
         return member;
     }
 
-    private static String buildFullName(String fName, String mName, String lName) {
+    private static String buildFullName(String firstName, String middleName, String lastName) {
         StringBuilder sb = new StringBuilder();
-        if (fName != null && !fName.trim().isEmpty()) {
-            sb.append(fName.trim());
+        if (firstName != null && !firstName.trim().isEmpty()) {
+            sb.append(firstName.trim());
         }
-        if (mName != null && !mName.trim().isEmpty()) {
+        if (middleName != null && !middleName.trim().isEmpty()) {
             if (!sb.isEmpty()) sb.append(" ");
-            sb.append(mName.trim());
+            sb.append(middleName.trim());
         }
-        if (lName != null && !lName.trim().isEmpty()) {
+        if (lastName != null && !lastName.trim().isEmpty()) {
             if (!sb.isEmpty()) sb.append(" ");
-            sb.append(lName.trim());
+            sb.append(lastName.trim());
         }
         return sb.toString();
     }

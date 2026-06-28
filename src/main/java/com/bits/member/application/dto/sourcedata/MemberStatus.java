@@ -5,10 +5,12 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 
-@Data
+@Getter
+@Setter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -17,19 +19,4 @@ public class MemberStatus {
     private String name;
     private String description;
     private Boolean active;
-
-    public String id() {
-        return id;
-    }
-
-    public String name() {
-        return name;
-    }
-    public String description() {
-        return description;
-    }
-    public Boolean active() {
-        return active;
-    }
-
 }

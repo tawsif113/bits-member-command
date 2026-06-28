@@ -28,7 +28,7 @@ public class BusinessDayAndBranchSpecification implements Specification<MemberVa
         LocalDate businessDate = context.businessDate();
 
         // 1. Office Type Check (only branch office)
-        String type = office.officeType();
+        String type = office.getOfficeType();
         if (type == null || (!type.equalsIgnoreCase("BRANCH") && !type.equalsIgnoreCase("BRANCH_OFFICE"))) {
             errors.put(MemberMessageKey.OFFICE.getKey(), LocalizedMessage.builder()
                     .key("member.branch.only")
@@ -36,7 +36,7 @@ public class BusinessDayAndBranchSpecification implements Specification<MemberVa
         }
 
         // 2. Business Day Open Check
-        String status = office.businessDayStatus();
+        String status = office.getBusinessDayStatus();
         if (status == null || !status.equalsIgnoreCase("OPEN")) {
             errors.put(MemberMessageKey.BUSINESS_DAY.getKey(), LocalizedMessage.builder()
                     .key("member.business.day.not.open")

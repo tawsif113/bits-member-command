@@ -42,8 +42,8 @@ public class MemberCategoryAndGroupPolicySpecification implements Specification<
         // 2. Age Range check
         if (aggregate.getPersonalInfo() != null && aggregate.getPersonalInfo().dateOfBirth() != null && businessDate != null) {
             int age = Period.between(aggregate.getPersonalInfo().dateOfBirth(), businessDate).getYears();
-            Integer ageFrom = classification.ageFrom();
-            Integer ageTo = classification.ageTo();
+            Integer ageFrom = classification.getAgeFrom();
+            Integer ageTo = classification.getAgeTo();
             if (ageFrom != null && ageTo != null) {
                 if (age < ageFrom || age > ageTo) {
                     errors.put(MemberMessageKey.CATEGORY.getKey(), LocalizedMessage.builder()
@@ -55,7 +55,7 @@ public class MemberCategoryAndGroupPolicySpecification implements Specification<
 
         ProjectPolicyInfo policy = context.sourceData().getProjectPolicyInfo();
         if (policy != null) {
-            String assocType = policy.associationType();
+            String assocType = policy.getAssociationType();
             if (assocType != null) {
                 if (assocType.equalsIgnoreCase("GROUP")) {
                     // Group-associated project
@@ -66,20 +66,20 @@ public class MemberCategoryAndGroupPolicySpecification implements Specification<
                                 .build());
                     } else {
                         // Check if group is in the branch
-                        if (group.branchInfoId() != null && !group.branchInfoId().equals(aggregate.getBranchInfoId())) {
+                        if (group.getBranchInfoId() != null && !group.getBranchInfoId().equals(aggregate.getBranchInfoId())) {
                             errors.put(MemberMessageKey.GROUP.getKey(), LocalizedMessage.builder()
                                     .key("member.vo.invalid")
                                     .build());
                         }
                         // Check group active status
-                        String groupStatus = group.groupStatus();
+                        String groupStatus = group.getGroupStatus();
                         if (groupStatus == null || (!groupStatus.equalsIgnoreCase("ACTIVE") && !groupStatus.equalsIgnoreCase("1"))) {
                             errors.put(MemberMessageKey.GROUP.getKey(), LocalizedMessage.builder()
                                     .key("member.vo.not.active")
                                     .build());
                         }
                         // Check gender policy
-                        String appGender = group.applicableGender();
+                        String appGender = group.getApplicableGender();
                         String mGender = aggregate.getPersonalInfo() != null ? aggregate.getPersonalInfo().genderId() : null;
                         if (appGender != null && mGender != null) {
                             if (!appGender.equalsIgnoreCase("BOTH") && !appGender.equalsIgnoreCase("3") && !appGender.equalsIgnoreCase(mGender)) {
@@ -98,8 +98,8 @@ public class MemberCategoryAndGroupPolicySpecification implements Specification<
                                 .build());
                     } else {
                         // Verify PO is assigned to branch and project
-                        if ((employee.branchInfoId() != null && !employee.branchInfoId().equals(aggregate.getBranchInfoId()))
-                                || (employee.projectInfoId() != null && !employee.projectInfoId().equals(aggregate.getProjectInfoId()))) {
+                        if ((employee.getBranchInfoId() != null && !employee.getBranchInfoId().equals(aggregate.getBranchInfoId()))
+                                || (employee.getProjectInfoId() != null && !employee.getProjectInfoId().equals(aggregate.getProjectInfoId()))) {
                             errors.put(MemberMessageKey.PO.getKey(), LocalizedMessage.builder()
                                     .key("member.po.invalid")
                                     .build());
