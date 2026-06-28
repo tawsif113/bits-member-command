@@ -1,12 +1,13 @@
 spring:
   application:
     name: member-command
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/member_command
   rabbitmq:
     host: localhost
     port: 5672
+    username: admin
+    password: admin
+  mongodb:
+    uri: mongodb://localhost:27017/member_command
 
 server:
   port: 8080
