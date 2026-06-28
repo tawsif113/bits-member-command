@@ -1,6 +1,5 @@
 package com.bits.member.application.dto;
 
-import com.bits.ddd.application.dto.SourceData;
 import com.bits.member.application.dto.sourcedata.Country;
 import com.bits.member.application.dto.sourcedata.EmployeeCoreInfo;
 import com.bits.member.application.dto.sourcedata.GroupInfo;
@@ -27,7 +26,7 @@ import lombok.Setter;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class MemberSourceData extends SourceData {
+public class MemberSourceData {
     private PhysicalOfficeInfo physicalOfficeInfo;
     private ProjectInfo projectInfo;
     private ProjectPolicyInfo projectPolicyInfo;

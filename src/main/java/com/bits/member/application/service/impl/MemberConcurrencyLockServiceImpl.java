@@ -1,6 +1,7 @@
-package com.bits.member.application.service;
+package com.bits.member.application.service.impl;
 
 import com.bits.member.application.command.CreateMemberCommand;
+import com.bits.member.application.service.MemberConcurrencyLockService;
 import java.util.concurrent.ConcurrentHashMap;
 import org.springframework.stereotype.Service;
 

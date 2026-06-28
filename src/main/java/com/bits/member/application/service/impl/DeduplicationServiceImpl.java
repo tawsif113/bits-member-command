@@ -1,7 +1,8 @@
-package com.bits.member.application.service;
+package com.bits.member.application.service.impl;
 
 import com.bits.member.application.command.CreateMemberCommand;
 import com.bits.member.application.dto.DeduplicationResult;
+import com.bits.member.application.service.DeduplicationService;
 import org.springframework.stereotype.Service;
 
 @Service
