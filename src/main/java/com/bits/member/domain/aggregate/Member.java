@@ -161,6 +161,7 @@ public class Member extends AggregateRoot<String> {
 
         Map<String, com.bits.ddd.shared.localization.LocalizedMessage> errors = compositeSpec.validate(context);
         if (errors != null && !errors.isEmpty()) {
+            System.err.println("MEMBER_VALIDATION_ERRORS: " + errors);
             throw new MemberValidationException(MemberFailedEvent.validationError(creationData.tracerId(), errors));
         }
 
