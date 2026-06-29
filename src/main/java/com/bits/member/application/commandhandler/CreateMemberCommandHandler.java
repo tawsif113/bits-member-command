@@ -115,11 +115,15 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         CountryDocument countryDoc = context.get("country", CountryDocument.class);
         sourceData.setCountry(memberSourceDataMapper.map(countryDoc));
 
-        GroupInfoDocument groupDoc = context.get("groupInfo", GroupInfoDocument.class);
-        sourceData.setGroupInfo(memberSourceDataMapper.map(groupDoc));
+        if (command.getGroupInfoId() != null) {
+            GroupInfoDocument groupDoc = context.get("groupInfo", GroupInfoDocument.class);
+            sourceData.setGroupInfo(memberSourceDataMapper.map(groupDoc));
+        }
 
-        EmployeeCoreInfoDocument poDoc = context.get("employeeCoreInfo", EmployeeCoreInfoDocument.class);
-        sourceData.setEmployeeCoreInfo(memberSourceDataMapper.map(poDoc));
+        if (command.getAssignedPoId() != null) {
+            EmployeeCoreInfoDocument poDoc = context.get("employeeCoreInfo", EmployeeCoreInfoDocument.class);
+            sourceData.setEmployeeCoreInfo(memberSourceDataMapper.map(poDoc));
+        }
 
         MemberClassificationDocument classDoc = context.get("memberClassification", MemberClassificationDocument.class);
         sourceData.setMemberClassification(memberSourceDataMapper.map(classDoc));

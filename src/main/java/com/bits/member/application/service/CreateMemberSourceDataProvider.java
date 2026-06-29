@@ -99,7 +99,7 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
 
         // 9. SavingsProductPolicy (needed for target amount validation)
         builder.addCustom("savingsProductPolicy", savingsProductPolicyRepository,
-                repo -> repo.findByFieldValue("savingsProductId", command.getSavingsProductId()),
+                repo -> repo.findByFieldValue("savingsProductId", Long.valueOf(command.getSavingsProductId())),
                 "savingsProductId",
                 LocalizedMessage.builder().key("SAVINGS_PRODUCT_POLICY_NOT_FOUND").build());
 
