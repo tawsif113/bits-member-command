@@ -1,14 +1,14 @@
 package com.bits.member.application.mapper;
 
 import com.bits.member.application.command.CreateMemberCommand;
-import com.bits.member.presentation.controller.dto.CreateMemberRequest;
+import com.bits.member.presentation.controller.dto.CreateMemberRequestDto;
 
 public final class MemberCommandMapper {
 
     private MemberCommandMapper() {
     }
 
-    public static CreateMemberCommand toCreateCommand(String tracerId, CreateMemberRequest request) {
+    public static CreateMemberCommand toCreateCommand(String tracerId, CreateMemberRequestDto request) {
         return new CreateMemberCommand(
                 tracerId,
                 request.operatorId(),

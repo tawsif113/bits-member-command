@@ -3,18 +3,25 @@ package com.bits.member.domain.aggregate;
 import com.bits.ddd.domain.aggregate.AggregateRoot;
 import com.bits.ddd.domain.specification.rules.Specification;
 import com.bits.ddd.shared.domain.value.DomainStatus;
+import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.domain.entity.ContactInfo;
-import com.bits.member.domain.entity.GuardianInfo;
 import com.bits.member.domain.entity.GuarantorInfo;
+import com.bits.member.domain.entity.GuardianInfo;
 import com.bits.member.domain.entity.NomineeInfo;
 import com.bits.member.domain.entity.PersonalInfo;
-import com.bits.member.domain.exception.MemberValidationException;
-import com.bits.member.domain.event.MemberCreatedEvent;
 import com.bits.member.domain.event.MemberFailedEvent;
+import com.bits.member.domain.exception.MemberValidationException;
 import com.bits.member.domain.mapper.MemberEventMapper;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.domain.specification.context.MemberValidationContext;
-import com.bits.member.domain.specification.rules.*;
+import com.bits.member.domain.specification.rules.BusinessDayAndBranchSpecification;
+import com.bits.member.domain.specification.rules.DeduplicationSpecification;
+import com.bits.member.domain.specification.rules.FieldPresenceAndFormatSpecification;
+import com.bits.member.domain.specification.rules.IdentityDocumentSpecification;
+import com.bits.member.domain.specification.rules.MemberCategoryAndGroupPolicySpecification;
+import com.bits.member.domain.specification.rules.NomineeAndGuarantorSpecification;
+import com.bits.member.domain.specification.rules.PersonalDataConsistencySpecification;
+import com.bits.member.domain.specification.rules.SavingsProductSpecification;
 import com.bits.member.domain.valueobject.MembershipStatusChangeHistory;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -159,7 +166,7 @@ public class Member extends AggregateRoot<String> {
                         .and(new NomineeAndGuarantorSpecification())
                         .and(new PersonalDataConsistencySpecification());
 
-        Map<String, com.bits.ddd.shared.localization.LocalizedMessage> errors = compositeSpec.validate(context);
+        Map<String, LocalizedMessage> errors = compositeSpec.validate(context);
         if (errors != null && !errors.isEmpty()) {
             throw new MemberValidationException(MemberFailedEvent.validationError(creationData.tracerId(), errors));
         }
