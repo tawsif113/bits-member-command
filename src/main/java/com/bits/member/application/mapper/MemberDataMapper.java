@@ -1,12 +1,15 @@
 package com.bits.member.application.mapper;
 
 import com.bits.member.application.command.CreateMemberCommand;
+import com.bits.member.application.command.SaveMemberFamilyCommand;
 import com.bits.member.application.dto.DeduplicationResult;
 import com.bits.member.application.dto.MemberSourceData;
+import com.bits.member.application.dto.sourcedata.Relationship;
 import com.bits.member.domain.entity.ContactInfo;
 import com.bits.member.domain.entity.MemberAddress;
 import com.bits.member.domain.entity.PersonalInfo;
 import com.bits.member.domain.param.MemberCreationData;
+import com.bits.member.domain.param.MemberFamilySaveData;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -91,5 +94,18 @@ public final class MemberDataMapper {
                 command.getGuarantorInfo(),
                 sourceData,
                 deduplicationResult);
+    }
+
+    public static MemberFamilySaveData toFamilySaveData(
+            SaveMemberFamilyCommand command,
+            List<Relationship> relationships) {
+        return new MemberFamilySaveData(
+                command.getTracerId(),
+                command.getOperatorId(),
+                command.getNominees(),
+                command.getGuardianInfo(),
+                command.getGuarantorInfo(),
+                command.getFamilyInfo(),
+                relationships);
     }
 }

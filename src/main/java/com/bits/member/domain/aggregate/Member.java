@@ -5,6 +5,7 @@ import com.bits.ddd.domain.specification.rules.Specification;
 import com.bits.ddd.shared.domain.value.DomainStatus;
 import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.domain.entity.ContactInfo;
+import com.bits.member.domain.entity.FamilyInfo;
 import com.bits.member.domain.entity.GuarantorInfo;
 import com.bits.member.domain.entity.GuardianInfo;
 import com.bits.member.domain.entity.NomineeInfo;
@@ -13,6 +14,8 @@ import com.bits.member.domain.event.MemberFailedEvent;
 import com.bits.member.domain.exception.MemberValidationException;
 import com.bits.member.domain.mapper.MemberEventMapper;
 import com.bits.member.domain.param.MemberCreationData;
+import com.bits.member.domain.param.MemberFamilySaveData;
+import com.bits.member.application.dto.MemberSourceData;
 import com.bits.member.domain.specification.context.MemberValidationContext;
 import com.bits.member.domain.specification.rules.BusinessDayAndBranchSpecification;
 import com.bits.member.domain.specification.rules.DeduplicationSpecification;
@@ -87,6 +90,7 @@ public class Member extends AggregateRoot<String> {
     private List<NomineeInfo> nominees = new ArrayList<>();
     private GuardianInfo guardianInfo;
     private GuarantorInfo guarantorInfo;
+    private FamilyInfo familyInfo;
     private List<MembershipStatusChangeHistory> statusHistory = new ArrayList<>();
     private String createdBy;
     private String updatedBy;
@@ -201,6 +205,62 @@ public class Member extends AggregateRoot<String> {
 
         member.addEvent(MemberEventMapper.toCreatedEvent(member));
         return member;
+    }
+
+    public void saveFamily(MemberFamilySaveData familyData) {
+        this.nominees = familyData.nominees() == null ? new ArrayList<>() : new ArrayList<>(familyData.nominees());
+        this.guardianInfo = familyData.guardianInfo();
+        this.guarantorInfo = familyData.guarantorInfo();
+        this.familyInfo = familyData.familyInfo();
+
+        MemberSourceData sourceData = new MemberSourceData();
+        sourceData.setRelationships(
+                familyData.relationships() == null ? new ArrayList<>() : new ArrayList<>(familyData.relationships()));
+
+        MemberValidationContext context = new MemberValidationContext(
+                sourceData,
+                null,
+                null,
+                this);
+
+        Specification<MemberValidationContext> specification = new NomineeAndGuarantorSpecification();
+        Map<String, LocalizedMessage> errors = specification.validate(context);
+        if (errors != null && !errors.isEmpty()) {
+            throw new MemberValidationException(MemberFailedEvent.validationError(familyData.traceId(), errors));
+        }
+
+        if (this.nominees != null && !this.nominees.isEmpty()) {
+            boolean allAdults = this.nominees.stream()
+                    .allMatch(nominee -> nominee.age() != null && nominee.age() >= 18);
+            if (allAdults) {
+                this.guardianInfo = null;
+            }
+
+            BigDecimal size = BigDecimal.valueOf(this.nominees.size());
+            BigDecimal equalShare = BigDecimal.valueOf(100).divide(size, 2, java.math.RoundingMode.HALF_UP);
+            List<NomineeInfo> redistributed = new ArrayList<>();
+            for (NomineeInfo nominee : this.nominees) {
+                redistributed.add(new NomineeInfo(
+                        nominee.id(),
+                        nominee.name(),
+                        nominee.relationshipId(),
+                        equalShare,
+                        nominee.dateOfBirth(),
+                        nominee.age(),
+                        nominee.nationalId(),
+                        nominee.smartCardId(),
+                        nominee.passportNo(),
+                        nominee.photoIdNo(),
+                        nominee.contactNo()));
+            }
+            this.nominees = redistributed;
+        }
+
+        this.status = DomainStatus.UPDATED;
+        this.updatedBy = familyData.operatorId();
+        this.lastUpdated = LocalDateTime.now();
+
+        addEvent(MemberEventMapper.toFamilySavedEvent(this));
     }
 
     private static String buildFullName(String firstName, String middleName, String lastName) {

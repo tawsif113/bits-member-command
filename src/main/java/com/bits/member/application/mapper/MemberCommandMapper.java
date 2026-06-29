@@ -1,7 +1,9 @@
 package com.bits.member.application.mapper;
 
 import com.bits.member.application.command.CreateMemberCommand;
+import com.bits.member.application.command.SaveMemberFamilyCommand;
 import com.bits.member.presentation.controller.dto.CreateMemberRequestDto;
+import com.bits.member.presentation.controller.dto.SaveMemberFamilyRequest;
 
 public final class MemberCommandMapper {
 
@@ -53,5 +55,19 @@ public final class MemberCommandMapper {
                 request.memberCustomField(),
                 request.academicQualificationId(),
                 request.referredBy());
+    }
+
+    public static SaveMemberFamilyCommand toSaveMemberFamilyCommand(
+            String tracerId,
+            String id,
+            SaveMemberFamilyRequest request) {
+        return new SaveMemberFamilyCommand(
+                tracerId,
+                request.operatorId(),
+                id,
+                request.nominees(),
+                request.guardianInfo(),
+                request.guarantorInfo(),
+                request.familyInfo());
     }
 }
