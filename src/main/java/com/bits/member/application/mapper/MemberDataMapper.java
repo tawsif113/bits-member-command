@@ -21,6 +21,7 @@ public final class MemberDataMapper {
             DeduplicationResult deduplicationResult,
             LocalDate businessDate,
             String memberNo) {
+        String countryId = sourceData.getCountry() == null ? null : sourceData.getCountry().getId();
         PersonalInfo personalInfo = new PersonalInfo(
                 null, // salutationId
                 command.getNationalId(),
@@ -56,8 +57,8 @@ public final class MemberDataMapper {
                 command.getContactNo(),
                 null,
                 List.of(
-                        new MemberAddress("1", command.getPresentAddress(), null, null, command.getPresentThanaId(), null),
-                        new MemberAddress("2", command.getPermanentAddress(), null, null, command.getPermanentThanaId(), null)));
+                        new MemberAddress("1", command.getPresentAddress(), countryId, null, command.getPresentThanaId(), null),
+                        new MemberAddress("2", command.getPermanentAddress(), countryId, null, command.getPermanentThanaId(), null)));
         return new MemberCreationData(
                 command.getTracerId(),
                 command.getOperatorId(),

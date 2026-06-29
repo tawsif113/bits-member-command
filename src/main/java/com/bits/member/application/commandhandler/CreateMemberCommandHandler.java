@@ -20,6 +20,7 @@ import com.bits.member.domain.aggregate.Member;
 import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.infrastructure.persistence.document.*;
+import com.bits.member.infrastructure.persistence.repository.RelationshipDocumentRepository;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
@@ -35,6 +36,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
     private final DeduplicationService deduplicationService;
     private final MemberNumberGenerator memberNumberGenerator;
     private final MemberSourceDataMapper memberSourceDataMapper;
+    private final RelationshipDocumentRepository relationshipRepository;
 
     public CreateMemberCommandHandler(
             DomainPersistenceService<Member, String> persistenceService,
@@ -43,7 +45,8 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             MemberConcurrencyLockService lockService,
             DeduplicationService deduplicationService,
             MemberNumberGenerator memberNumberGenerator,
-            MemberSourceDataMapper memberSourceDataMapper) {
+            MemberSourceDataMapper memberSourceDataMapper,
+            RelationshipDocumentRepository relationshipRepository) {
         this.persistenceService = persistenceService;
         this.sourceDataProvider = sourceDataProvider;
         this.messageProcessor = messageProcessor;
@@ -51,6 +54,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         this.deduplicationService = deduplicationService;
         this.memberNumberGenerator = memberNumberGenerator;
         this.memberSourceDataMapper = memberSourceDataMapper;
+        this.relationshipRepository = relationshipRepository;
     }
 
     @Override
@@ -105,6 +109,12 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         ProjectInfoDocument projectDoc = context.get("projectInfo", ProjectInfoDocument.class);
         sourceData.setProjectInfo(memberSourceDataMapper.map(projectDoc));
 
+        ProjectPolicyInfoDocument projectPolicyDoc = context.get("projectPolicyInfo", ProjectPolicyInfoDocument.class);
+        sourceData.setProjectPolicyInfo(memberSourceDataMapper.map(projectPolicyDoc));
+
+        CountryDocument countryDoc = context.get("country", CountryDocument.class);
+        sourceData.setCountry(memberSourceDataMapper.map(countryDoc));
+
         GroupInfoDocument groupDoc = context.get("groupInfo", GroupInfoDocument.class);
         sourceData.setGroupInfo(memberSourceDataMapper.map(groupDoc));
 
@@ -116,6 +126,17 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
 
         SavingsProductDocument productDoc = context.get("savingsProduct", SavingsProductDocument.class);
         sourceData.setSavingsProduct(memberSourceDataMapper.map(productDoc));
+
+        SavingsProductPolicyDocument productPolicyDoc = context.get("savingsProductPolicy", SavingsProductPolicyDocument.class);
+        sourceData.setSavingsProductPolicy(memberSourceDataMapper.map(productPolicyDoc));
+
+        java.util.List<com.bits.member.application.dto.sourcedata.Relationship> relationships = new java.util.ArrayList<>();
+        for (RelationshipDocument relationshipDocument : relationshipRepository.findAll()) {
+            if (Boolean.TRUE.equals(relationshipDocument.getActive())) {
+                relationships.add(memberSourceDataMapper.map(relationshipDocument));
+            }
+        }
+        sourceData.setRelationships(relationships);
 
         if (command.getOccupationId() != null) {
             OccupationDocument occDoc = context.get("occupation", OccupationDocument.class);
