@@ -3,7 +3,7 @@ package com.bits.member.presentation.controller;
 import com.bits.ddd.infra.core.bus.CommandBus;
 import com.bits.member.application.command.CreateMemberCommand;
 import com.bits.member.application.mapper.MemberCommandMapper;
-import com.bits.member.presentation.controller.dto.CreateMemberRequest;
+import com.bits.member.presentation.controller.dto.CreateMemberRequestDto;
 import jakarta.validation.Valid;
 import java.util.Map;
 import org.springframework.http.HttpStatus;
@@ -27,8 +27,8 @@ public class MemberCommandController {
     @PostMapping
     public ResponseEntity<Map<String, Object>> createMember(
             @RequestAttribute(name = "trace_id", required = false) String tracerId,
-            @Valid @RequestBody CreateMemberRequest request) {
-        CreateMemberCommand command = MemberCommandMapper.toCreateCommand(tracerId, request);
+            @Valid @RequestBody CreateMemberRequestDto createMemberRequestDto) {
+        CreateMemberCommand command = MemberCommandMapper.toCreateCommand(tracerId, createMemberRequestDto);
         commandBus.handle(command);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
                 .body(Map.of("status", "ACCEPTED", "traceId", tracerId));
