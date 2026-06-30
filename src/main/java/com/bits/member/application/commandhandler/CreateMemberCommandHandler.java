@@ -2,11 +2,11 @@ package com.bits.member.application.commandhandler;
 
 import com.bits.ddd.annotation.PersistDomain;
 import com.bits.ddd.annotation.RegisterCommandHandler;
-import com.bits.ddd.application.handler.CommandHandler;
-import com.bits.ddd.application.service.MessageProcessor;
-import com.bits.ddd.application.service.SourceDataContext;
-import com.bits.ddd.application.service.SourceDataProvider;
-import com.bits.ddd.infra.persistence.service.DomainPersistenceService;
+import com.bits.ddd.handler.CommandHandler;
+import com.bits.ddd.service.MessageProcessor;
+import com.bits.ddd.service.SourceDataContext;
+import com.bits.ddd.service.SourceDataProvider;
+import com.bits.ddd.service.DomainPersistenceService;
 import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.member.application.command.CreateMemberCommand;
 import com.bits.member.application.dto.DeduplicationResult;
@@ -20,7 +20,6 @@ import com.bits.member.domain.aggregate.Member;
 import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.infrastructure.persistence.document.*;
-import com.bits.member.infrastructure.persistence.repository.RelationshipDocumentRepository;
 import java.time.LocalDate;
 import org.springframework.stereotype.Service;
 
@@ -36,7 +35,6 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
     private final DeduplicationService deduplicationService;
     private final MemberNumberGenerator memberNumberGenerator;
     private final MemberSourceDataMapper memberSourceDataMapper;
-    private final RelationshipDocumentRepository relationshipRepository;
 
     public CreateMemberCommandHandler(
             DomainPersistenceService<Member, String> persistenceService,
@@ -45,16 +43,14 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             MemberConcurrencyLockService lockService,
             DeduplicationService deduplicationService,
             MemberNumberGenerator memberNumberGenerator,
-            MemberSourceDataMapper memberSourceDataMapper,
-            RelationshipDocumentRepository relationshipRepository) {
-        this.persistenceService = persistenceService;
-        this.sourceDataProvider = sourceDataProvider;
+            MemberSourceDataMapper memberSourceDataMapper) {
+      this.persistenceService = persistenceService;
+      this.sourceDataProvider = sourceDataProvider;
         this.messageProcessor = messageProcessor;
         this.lockService = lockService;
         this.deduplicationService = deduplicationService;
         this.memberNumberGenerator = memberNumberGenerator;
         this.memberSourceDataMapper = memberSourceDataMapper;
-        this.relationshipRepository = relationshipRepository;
     }
 
     @Override
@@ -135,7 +131,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         sourceData.setSavingsProductPolicy(memberSourceDataMapper.map(productPolicyDoc));
 
         java.util.List<com.bits.member.application.dto.sourcedata.Relationship> relationships = new java.util.ArrayList<>();
-        for (RelationshipDocument relationshipDocument : relationshipRepository.findAll()) {
+        for (RelationshipDocument relationshipDocument : context.getList("relationships", RelationshipDocument.class)) {
             if (Boolean.TRUE.equals(relationshipDocument.getActive())) {
                 relationships.add(memberSourceDataMapper.map(relationshipDocument));
             }

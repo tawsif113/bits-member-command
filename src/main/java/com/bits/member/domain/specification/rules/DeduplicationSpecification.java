@@ -1,6 +1,6 @@
 package com.bits.member.domain.specification.rules;
 
-import com.bits.ddd.domain.specification.rules.Specification;
+import com.bits.ddd.specification.rules.Specification;
 import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.domain.enums.MemberMessageKey;
 import com.bits.member.domain.specification.context.MemberValidationContext;
