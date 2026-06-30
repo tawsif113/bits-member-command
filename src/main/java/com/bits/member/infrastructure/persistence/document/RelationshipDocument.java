@@ -1,7 +1,7 @@
 package com.bits.member.infrastructure.persistence.document;
 
 import com.bits.ddd.annotation.MongoSourceData;
-import com.bits.ddd.domain.sourcedata.SourceData;
+import com.bits.ddd.dto.SourceData;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;

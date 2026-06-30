@@ -6,6 +6,7 @@ import com.bits.member.application.mapper.MemberCommandMapper;
 import com.bits.member.presentation.controller.dto.CreateMemberRequestDto;
 import jakarta.validation.Valid;
 import java.util.Map;
+import java.util.UUID;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -28,9 +29,12 @@ public class MemberCommandController {
     public ResponseEntity<Map<String, Object>> createMember(
             @RequestAttribute(name = "trace_id", required = false) String tracerId,
             @Valid @RequestBody CreateMemberRequestDto createMemberRequestDto) {
-        CreateMemberCommand command = MemberCommandMapper.toCreateCommand(tracerId, createMemberRequestDto);
+        String effectiveTracerId = tracerId == null || tracerId.isBlank()
+                ? UUID.randomUUID().toString()
+                : tracerId;
+        CreateMemberCommand command = MemberCommandMapper.toCreateCommand(effectiveTracerId, createMemberRequestDto);
         commandBus.handle(command);
         return ResponseEntity.status(HttpStatus.ACCEPTED)
-                .body(Map.of("status", "ACCEPTED", "traceId", tracerId));
+                .body(Map.of("status", "ACCEPTED", "traceId", effectiveTracerId));
     }
 }

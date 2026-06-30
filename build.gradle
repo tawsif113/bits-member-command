@@ -6,7 +6,7 @@ plugins {
 
 group = 'com.bits.member'
 version = '0.0.1-SNAPSHOT'
-description = 'Member command-side service scaffold using bits-ddd 1.0.7'
+description = 'Member command-side service scaffold using bits-ddd 1.2.1'
 
 java {
     toolchain {
@@ -16,16 +16,15 @@ java {
 
 dependencyManagement {
     imports {
-        mavenBom 'com.bits.ddd:bits-ddd-bom:1.2.0'
+        mavenBom 'com.bits.ddd:bits-ddd-bom:1.2.1'
     }
 }
 
 dependencies {
-    implementation 'com.bits.ddd:command-core:1.2.0'
-    implementation 'com.bits.ddd:starter:1.2.0'
-    implementation 'com.bits.ddd:annotation:1.2.0'
-    annotationProcessor 'com.bits.ddd:annotation-processor:1.2.0'
-    annotationProcessor 'com.bits.ddd:annotation:1.2.0'
+    implementation 'com.bits.ddd:command-core:1.2.1'
+    implementation 'com.bits.ddd:annotation:1.2.1'
+    annotationProcessor 'com.bits.ddd:annotation-processor:1.2.1'
+    annotationProcessor 'com.bits.ddd:annotation:1.2.1'
 
     implementation 'org.springframework.boot:spring-boot-starter-validation'
 

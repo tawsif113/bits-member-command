@@ -1,8 +1,8 @@
 package com.bits.member.application.service;
 
-import com.bits.ddd.application.service.SourceDataContext;
-import com.bits.ddd.application.service.SourceDataCoordinator;
-import com.bits.ddd.application.service.SourceDataProvider;
+import com.bits.ddd.service.SourceDataContext;
+import com.bits.ddd.service.SourceDataCoordinator;
+import com.bits.ddd.service.SourceDataProvider;
 import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.application.command.CreateMemberCommand;
@@ -22,6 +22,7 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
     private final MemberClassificationDocumentRepository classificationRepository;
     private final SavingsProductDocumentRepository productRepository;
     private final SavingsProductPolicyDocumentRepository savingsProductPolicyRepository;
+    private final RelationshipDocumentRepository relationshipRepository;
     private final CountryDocumentRepository countryRepository;
     private final OccupationDocumentRepository occupationRepository;
     private final ThanaDocumentRepository thanaRepository;
@@ -36,6 +37,7 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
             MemberClassificationDocumentRepository classificationRepository,
             SavingsProductDocumentRepository productRepository,
             SavingsProductPolicyDocumentRepository savingsProductPolicyRepository,
+            RelationshipDocumentRepository relationshipRepository,
             CountryDocumentRepository countryRepository,
             OccupationDocumentRepository occupationRepository,
             ThanaDocumentRepository thanaRepository) {
@@ -48,6 +50,7 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
         this.classificationRepository = classificationRepository;
         this.productRepository = productRepository;
         this.savingsProductPolicyRepository = savingsProductPolicyRepository;
+        this.relationshipRepository = relationshipRepository;
         this.countryRepository = countryRepository;
         this.occupationRepository = occupationRepository;
         this.thanaRepository = thanaRepository;
@@ -103,25 +106,30 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
                 "savingsProductId",
                 LocalizedMessage.builder().key("SAVINGS_PRODUCT_POLICY_NOT_FOUND").build());
 
-        // 10. Occupation (Optional)
+        // 10. Relationships (required for nominee/guarantor validation)
+        builder.addListSupplier("relationships", relationshipRepository::findAll,
+                "relationships",
+                LocalizedMessage.builder().key("RELATIONSHIP_NOT_FOUND").build());
+
+        // 11. Occupation (Optional)
         if (command.getOccupationId() != null) {
             builder.add("occupation", occupationRepository, command.getOccupationId(), "occupationId",
                     LocalizedMessage.builder().key("OCCUPATION_NOT_FOUND").build());
         }
 
-        // 11. Present Thana (Optional)
+        // 12. Present Thana (Optional)
         if (command.getPresentThanaId() != null) {
             builder.add("presentThana", thanaRepository, command.getPresentThanaId(), "presentThanaId",
                     LocalizedMessage.builder().key("PRESENT_THANA_NOT_FOUND").build());
         }
 
-        // 12. Permanent Thana (Optional)
+        // 13. Permanent Thana (Optional)
         if (command.getPermanentThanaId() != null) {
             builder.add("permanentThana", thanaRepository, command.getPermanentThanaId(), "permanentThanaId",
                     LocalizedMessage.builder().key("PERMANENT_THANA_NOT_FOUND").build());
         }
 
-        return builder.fetch(errors -> new DomainValidationException(
+        return builder.fetch((tracerId, errors) -> new DomainValidationException(
                 MemberErrorCode.SOURCE_DATA_ERROR.getCode(),
                 errors.toString()
         ));

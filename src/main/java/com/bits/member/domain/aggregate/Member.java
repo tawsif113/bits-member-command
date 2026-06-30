@@ -1,7 +1,7 @@
 package com.bits.member.domain.aggregate;
 
-import com.bits.ddd.domain.aggregate.AggregateRoot;
-import com.bits.ddd.domain.specification.rules.Specification;
+import com.bits.ddd.aggregate.AggregateRoot;
+import com.bits.ddd.specification.rules.Specification;
 import com.bits.ddd.shared.domain.value.DomainStatus;
 import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.domain.entity.ContactInfo;
