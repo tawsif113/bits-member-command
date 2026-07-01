@@ -6,6 +6,7 @@ import com.bits.ddd.service.SourceDataProvider;
 import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.ddd.shared.localization.LocalizedMessage;
 import com.bits.member.application.command.CreateMemberCommand;
+import com.bits.member.application.constant.CreateMemberSourceDataKeys;
 import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.infrastructure.persistence.repository.*;
 import org.springframework.stereotype.Component;
@@ -61,71 +62,72 @@ public class CreateMemberSourceDataProvider implements SourceDataProvider<Create
         SourceDataCoordinator.SourceDataFetchBuilder builder = coordinator.builder(command.getTracerId());
 
         // 1. PhysicalOfficeInfo (Required)
-        builder.add("physicalOfficeInfo", officeRepository, command.getBranchInfoId(), "branchInfoId",
+        builder.add(CreateMemberSourceDataKeys.PHYSICAL_OFFICE_INFO, officeRepository, command.getBranchInfoId(), "branchInfoId",
                 LocalizedMessage.builder().key("PHYSICAL_OFFICE_NOT_FOUND").build());
 
         // 2. ProjectInfo (Required)
-        builder.add("projectInfo", projectRepository, command.getProjectInfoId(), "projectInfoId",
+        builder.add(CreateMemberSourceDataKeys.PROJECT_INFO, projectRepository, command.getProjectInfoId(), "projectInfoId",
                 LocalizedMessage.builder().key("PROJECT_NOT_FOUND").build());
 
         // 3. Country (required for member identity/address mapping)
-        builder.addCustom("country", countryRepository,
+        builder.addCustom(CreateMemberSourceDataKeys.COUNTRY, countryRepository,
                 repo -> repo.findByFieldValue("code", "BD"),
                 "code",
                 LocalizedMessage.builder().key("COUNTRY_NOT_FOUND").build());
 
         // 4. ProjectPolicyInfo (needed by category/savings validation)
-        builder.addCustom("projectPolicyInfo", projectPolicyRepository,
+        builder.addCustom(CreateMemberSourceDataKeys.PROJECT_POLICY_INFO, projectPolicyRepository,
                 repo -> repo.findByFieldValue("projectInfoId", command.getProjectInfoId()),
                 "projectInfoId",
                 LocalizedMessage.builder().key("PROJECT_POLICY_NOT_FOUND").build());
 
         // 5. GroupInfo (only when supplied)
         if (command.getGroupInfoId() != null) {
-            builder.add("groupInfo", groupRepository, command.getGroupInfoId(), "groupInfoId",
+            builder.add(CreateMemberSourceDataKeys.GROUP_INFO, groupRepository, command.getGroupInfoId(), "groupInfoId",
                     LocalizedMessage.builder().key("GROUP_NOT_FOUND").build());
         }
 
         // 6. EmployeeCoreInfo (only when supplied)
         if (command.getAssignedPoId() != null) {
-            builder.add("employeeCoreInfo", employeeRepository, command.getAssignedPoId(), "assignedPoId",
+            builder.add(CreateMemberSourceDataKeys.EMPLOYEE_CORE_INFO, employeeRepository, command.getAssignedPoId(), "assignedPoId",
                     LocalizedMessage.builder().key("EMPLOYEE_NOT_FOUND").build());
         }
 
         // 7. MemberClassification (Required)
-        builder.add("memberClassification", classificationRepository, command.getMemberClassificationId(), "memberClassificationId",
+        builder.add(CreateMemberSourceDataKeys.MEMBER_CLASSIFICATION,
+                classificationRepository, command.getMemberClassificationId(), "memberClassificationId",
                 LocalizedMessage.builder().key("MEMBER_CLASSIFICATION_NOT_FOUND").build());
 
         // 8. SavingsProduct (Required)
-        builder.add("savingsProduct", productRepository, command.getSavingsProductId(), "savingsProductId",
+        builder.add(CreateMemberSourceDataKeys.SAVINGS_PRODUCT, productRepository, command.getSavingsProductId(), "savingsProductId",
                 LocalizedMessage.builder().key("SAVINGS_PRODUCT_NOT_FOUND").build());
 
         // 9. SavingsProductPolicy (needed for target amount validation)
-        builder.addCustom("savingsProductPolicy", savingsProductPolicyRepository,
+        builder.addCustom(CreateMemberSourceDataKeys.SAVINGS_PRODUCT_POLICY, savingsProductPolicyRepository,
                 repo -> repo.findByFieldValue("savingsProductId", Long.valueOf(command.getSavingsProductId())),
                 "savingsProductId",
                 LocalizedMessage.builder().key("SAVINGS_PRODUCT_POLICY_NOT_FOUND").build());
 
         // 10. Relationships (required for nominee/guarantor validation)
-        builder.addListSupplier("relationships", relationshipRepository::findAll,
-                "relationships",
+        builder.addListSupplier(CreateMemberSourceDataKeys.RELATIONSHIPS, relationshipRepository::findAll,
+                CreateMemberSourceDataKeys.RELATIONSHIPS,
                 LocalizedMessage.builder().key("RELATIONSHIP_NOT_FOUND").build());
 
         // 11. Occupation (Optional)
         if (command.getOccupationId() != null) {
-            builder.add("occupation", occupationRepository, command.getOccupationId(), "occupationId",
+            builder.add(CreateMemberSourceDataKeys.OCCUPATION, occupationRepository, command.getOccupationId(), "occupationId",
                     LocalizedMessage.builder().key("OCCUPATION_NOT_FOUND").build());
         }
 
         // 12. Present Thana (Optional)
         if (command.getPresentThanaId() != null) {
-            builder.add("presentThana", thanaRepository, command.getPresentThanaId(), "presentThanaId",
+            builder.add(CreateMemberSourceDataKeys.PRESENT_THANA, thanaRepository, command.getPresentThanaId(), "presentThanaId",
                     LocalizedMessage.builder().key("PRESENT_THANA_NOT_FOUND").build());
         }
 
         // 13. Permanent Thana (Optional)
         if (command.getPermanentThanaId() != null) {
-            builder.add("permanentThana", thanaRepository, command.getPermanentThanaId(), "permanentThanaId",
+            builder.add(CreateMemberSourceDataKeys.PERMANENT_THANA, thanaRepository, command.getPermanentThanaId(), "permanentThanaId",
                     LocalizedMessage.builder().key("PERMANENT_THANA_NOT_FOUND").build());
         }
 

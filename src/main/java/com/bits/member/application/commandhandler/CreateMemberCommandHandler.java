@@ -3,14 +3,17 @@ package com.bits.member.application.commandhandler;
 import com.bits.ddd.annotation.PersistDomain;
 import com.bits.ddd.annotation.RegisterCommandHandler;
 import com.bits.ddd.handler.CommandHandler;
+import com.bits.ddd.service.DomainPersistenceService;
 import com.bits.ddd.service.MessageProcessor;
 import com.bits.ddd.service.SourceDataContext;
 import com.bits.ddd.service.SourceDataProvider;
-import com.bits.ddd.service.DomainPersistenceService;
 import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.member.application.command.CreateMemberCommand;
+import com.bits.member.application.constant.CreateMemberSourceDataKeys;
 import com.bits.member.application.dto.DeduplicationResult;
 import com.bits.member.application.dto.MemberSourceData;
+import com.bits.member.application.dto.sourcedata.Relationship;
+import com.bits.member.application.dto.sourcedata.Thana;
 import com.bits.member.application.mapper.MemberDataMapper;
 import com.bits.member.application.mapper.MemberSourceDataMapper;
 import com.bits.member.application.service.DeduplicationService;
@@ -20,8 +23,11 @@ import com.bits.member.domain.aggregate.Member;
 import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.infrastructure.persistence.document.*;
-import java.time.LocalDate;
 import org.springframework.stereotype.Service;
+
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Service
 @RegisterCommandHandler
@@ -44,8 +50,8 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             DeduplicationService deduplicationService,
             MemberNumberGenerator memberNumberGenerator,
             MemberSourceDataMapper memberSourceDataMapper) {
-      this.persistenceService = persistenceService;
-      this.sourceDataProvider = sourceDataProvider;
+        this.persistenceService = persistenceService;
+        this.sourceDataProvider = sourceDataProvider;
         this.messageProcessor = messageProcessor;
         this.lockService = lockService;
         this.deduplicationService = deduplicationService;
@@ -85,7 +91,6 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             Member member = Member.create(creationData);
             persistenceService.persist(member);
             messageProcessor.publish(member.getEvents());
-            member.clearEvents();
         } finally {
             if (branchProjectGroupLocked) {
                 lockService.release(branchProjectGroupLockKey);
@@ -99,39 +104,46 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
     private MemberSourceData mapToMemberSourceData(CreateMemberCommand command, SourceDataContext context) {
         MemberSourceData sourceData = new MemberSourceData();
 
-        PhysicalOfficeInfoDocument officeDoc = context.get("physicalOfficeInfo", PhysicalOfficeInfoDocument.class);
+        PhysicalOfficeInfoDocument officeDoc = context.get(
+                CreateMemberSourceDataKeys.PHYSICAL_OFFICE_INFO, PhysicalOfficeInfoDocument.class);
         sourceData.setPhysicalOfficeInfo(memberSourceDataMapper.map(officeDoc));
 
-        ProjectInfoDocument projectDoc = context.get("projectInfo", ProjectInfoDocument.class);
+        ProjectInfoDocument projectDoc = context.get(CreateMemberSourceDataKeys.PROJECT_INFO, ProjectInfoDocument.class);
         sourceData.setProjectInfo(memberSourceDataMapper.map(projectDoc));
 
-        ProjectPolicyInfoDocument projectPolicyDoc = context.get("projectPolicyInfo", ProjectPolicyInfoDocument.class);
+        ProjectPolicyInfoDocument projectPolicyDoc = context.get(
+                CreateMemberSourceDataKeys.PROJECT_POLICY_INFO, ProjectPolicyInfoDocument.class);
         sourceData.setProjectPolicyInfo(memberSourceDataMapper.map(projectPolicyDoc));
 
-        CountryDocument countryDoc = context.get("country", CountryDocument.class);
+        CountryDocument countryDoc = context.get(CreateMemberSourceDataKeys.COUNTRY, CountryDocument.class);
         sourceData.setCountry(memberSourceDataMapper.map(countryDoc));
 
         if (command.getGroupInfoId() != null) {
-            GroupInfoDocument groupDoc = context.get("groupInfo", GroupInfoDocument.class);
+            GroupInfoDocument groupDoc = context.get(CreateMemberSourceDataKeys.GROUP_INFO, GroupInfoDocument.class);
             sourceData.setGroupInfo(memberSourceDataMapper.map(groupDoc));
         }
 
         if (command.getAssignedPoId() != null) {
-            EmployeeCoreInfoDocument poDoc = context.get("employeeCoreInfo", EmployeeCoreInfoDocument.class);
+            EmployeeCoreInfoDocument poDoc = context.get(
+                    CreateMemberSourceDataKeys.EMPLOYEE_CORE_INFO, EmployeeCoreInfoDocument.class);
             sourceData.setEmployeeCoreInfo(memberSourceDataMapper.map(poDoc));
         }
 
-        MemberClassificationDocument classDoc = context.get("memberClassification", MemberClassificationDocument.class);
+        MemberClassificationDocument classDoc = context.get(
+                CreateMemberSourceDataKeys.MEMBER_CLASSIFICATION, MemberClassificationDocument.class);
         sourceData.setMemberClassification(memberSourceDataMapper.map(classDoc));
 
-        SavingsProductDocument productDoc = context.get("savingsProduct", SavingsProductDocument.class);
+        SavingsProductDocument productDoc = context.get(
+                CreateMemberSourceDataKeys.SAVINGS_PRODUCT, SavingsProductDocument.class);
         sourceData.setSavingsProduct(memberSourceDataMapper.map(productDoc));
 
-        SavingsProductPolicyDocument productPolicyDoc = context.get("savingsProductPolicy", SavingsProductPolicyDocument.class);
+        SavingsProductPolicyDocument productPolicyDoc = context.get(
+                CreateMemberSourceDataKeys.SAVINGS_PRODUCT_POLICY, SavingsProductPolicyDocument.class);
         sourceData.setSavingsProductPolicy(memberSourceDataMapper.map(productPolicyDoc));
 
-        java.util.List<com.bits.member.application.dto.sourcedata.Relationship> relationships = new java.util.ArrayList<>();
-        for (RelationshipDocument relationshipDocument : context.getList("relationships", RelationshipDocument.class)) {
+        List<Relationship> relationships = new ArrayList<>();
+        for (RelationshipDocument relationshipDocument : context.getList(
+                CreateMemberSourceDataKeys.RELATIONSHIPS, RelationshipDocument.class)) {
             if (Boolean.TRUE.equals(relationshipDocument.getActive())) {
                 relationships.add(memberSourceDataMapper.map(relationshipDocument));
             }
@@ -139,17 +151,17 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         sourceData.setRelationships(relationships);
 
         if (command.getOccupationId() != null) {
-            OccupationDocument occDoc = context.get("occupation", OccupationDocument.class);
+            OccupationDocument occDoc = context.get(CreateMemberSourceDataKeys.OCCUPATION, OccupationDocument.class);
             sourceData.setOccupation(memberSourceDataMapper.map(occDoc));
         }
 
-        java.util.List<com.bits.member.application.dto.sourcedata.Thana> thanaList = new java.util.ArrayList<>();
+        List<Thana> thanaList = new ArrayList<>();
         if (command.getPresentThanaId() != null) {
-            ThanaDocument thanaDoc = context.get("presentThana", ThanaDocument.class);
+            ThanaDocument thanaDoc = context.get(CreateMemberSourceDataKeys.PRESENT_THANA, ThanaDocument.class);
             thanaList.add(memberSourceDataMapper.map(thanaDoc));
         }
         if (command.getPermanentThanaId() != null) {
-            ThanaDocument thanaDoc = context.get("permanentThana", ThanaDocument.class);
+            ThanaDocument thanaDoc = context.get(CreateMemberSourceDataKeys.PERMANENT_THANA, ThanaDocument.class);
             thanaList.add(memberSourceDataMapper.map(thanaDoc));
         }
         sourceData.setThanas(thanaList);
