@@ -3,10 +3,10 @@ package com.bits.member.application.commandhandler;
 import com.bits.ddd.annotation.PersistDomain;
 import com.bits.ddd.annotation.RegisterCommandHandler;
 import com.bits.ddd.handler.CommandHandler;
+import com.bits.ddd.service.DomainPersistenceService;
 import com.bits.ddd.service.MessageProcessor;
 import com.bits.ddd.service.SourceDataContext;
 import com.bits.ddd.service.SourceDataProvider;
-import com.bits.ddd.service.DomainPersistenceService;
 import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.member.application.command.CreateMemberCommand;
 import com.bits.member.application.dto.DeduplicationResult;
@@ -22,10 +22,11 @@ import com.bits.member.domain.aggregate.Member;
 import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.infrastructure.persistence.document.*;
+import org.springframework.stereotype.Service;
+
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import org.springframework.stereotype.Service;
 
 @Service
 @RegisterCommandHandler
@@ -48,8 +49,8 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             DeduplicationService deduplicationService,
             MemberNumberGenerator memberNumberGenerator,
             MemberSourceDataMapper memberSourceDataMapper) {
-      this.persistenceService = persistenceService;
-      this.sourceDataProvider = sourceDataProvider;
+        this.persistenceService = persistenceService;
+        this.sourceDataProvider = sourceDataProvider;
         this.messageProcessor = messageProcessor;
         this.lockService = lockService;
         this.deduplicationService = deduplicationService;
@@ -89,7 +90,6 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             Member member = Member.create(creationData);
             persistenceService.persist(member);
             messageProcessor.publish(member.getEvents());
-            member.clearEvents();
         } finally {
             if (branchProjectGroupLocked) {
                 lockService.release(branchProjectGroupLockKey);
