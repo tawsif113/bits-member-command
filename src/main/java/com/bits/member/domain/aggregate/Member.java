@@ -32,6 +32,7 @@ import java.util.Map;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.jspecify.annotations.NonNull;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
@@ -174,17 +175,7 @@ public class Member extends AggregateRoot<String> {
 
         // ── Post-validation nominee share redistribution ──
         if (member.nominees != null && !member.nominees.isEmpty()) {
-            BigDecimal size = BigDecimal.valueOf(member.nominees.size());
-            BigDecimal equalShare = BigDecimal.valueOf(100).divide(size, 2, java.math.RoundingMode.HALF_UP);
-            List<NomineeInfo> redistributed = new ArrayList<>();
-            for (NomineeInfo n : member.nominees) {
-                redistributed.add(new NomineeInfo(
-                        n.id(), n.name(), n.relationshipId(), equalShare,
-                        n.dateOfBirth(), n.age(), n.nationalId(), n.smartCardId(),
-                        n.passportNo(), n.photoIdNo(), n.contactNo()
-                ));
-            }
-            member.nominees = redistributed;
+          member.nominees = getNomineeInfos(member);
         }
 
         // ── Initial status history entry ──
@@ -202,6 +193,20 @@ public class Member extends AggregateRoot<String> {
 
         member.addEvent(MemberEventMapper.toCreatedEvent(member));
         return member;
+    }
+
+    private static @NonNull List<NomineeInfo> getNomineeInfos(Member member) {
+        BigDecimal size = BigDecimal.valueOf(member.nominees.size());
+        BigDecimal equalShare = BigDecimal.valueOf(100).divide(size, 2, java.math.RoundingMode.HALF_UP);
+        List<NomineeInfo> redistributed = new ArrayList<>();
+        for (NomineeInfo n : member.nominees) {
+            redistributed.add(new NomineeInfo(
+                    n.id(), n.name(), n.relationshipId(), equalShare,
+                    n.dateOfBirth(), n.age(), n.nationalId(), n.smartCardId(),
+                    n.passportNo(), n.photoIdNo(), n.contactNo()
+            ));
+        }
+        return redistributed;
     }
 
     private static String buildFullName(String firstName, String middleName, String lastName) {
