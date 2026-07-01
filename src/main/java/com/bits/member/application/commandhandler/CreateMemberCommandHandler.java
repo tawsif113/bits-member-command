@@ -11,6 +11,8 @@ import com.bits.ddd.shared.exception.domain.DomainValidationException;
 import com.bits.member.application.command.CreateMemberCommand;
 import com.bits.member.application.dto.DeduplicationResult;
 import com.bits.member.application.dto.MemberSourceData;
+import com.bits.member.application.dto.sourcedata.Relationship;
+import com.bits.member.application.dto.sourcedata.Thana;
 import com.bits.member.application.mapper.MemberDataMapper;
 import com.bits.member.application.mapper.MemberSourceDataMapper;
 import com.bits.member.application.service.DeduplicationService;
@@ -21,6 +23,8 @@ import com.bits.member.domain.enums.MemberErrorCode;
 import com.bits.member.domain.param.MemberCreationData;
 import com.bits.member.infrastructure.persistence.document.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -130,7 +134,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
         SavingsProductPolicyDocument productPolicyDoc = context.get("savingsProductPolicy", SavingsProductPolicyDocument.class);
         sourceData.setSavingsProductPolicy(memberSourceDataMapper.map(productPolicyDoc));
 
-        java.util.List<com.bits.member.application.dto.sourcedata.Relationship> relationships = new java.util.ArrayList<>();
+        List<Relationship> relationships = new ArrayList<>();
         for (RelationshipDocument relationshipDocument : context.getList("relationships", RelationshipDocument.class)) {
             if (Boolean.TRUE.equals(relationshipDocument.getActive())) {
                 relationships.add(memberSourceDataMapper.map(relationshipDocument));
@@ -143,7 +147,7 @@ public class CreateMemberCommandHandler implements CommandHandler<CreateMemberCo
             sourceData.setOccupation(memberSourceDataMapper.map(occDoc));
         }
 
-        java.util.List<com.bits.member.application.dto.sourcedata.Thana> thanaList = new java.util.ArrayList<>();
+        List<Thana> thanaList = new ArrayList<>();
         if (command.getPresentThanaId() != null) {
             ThanaDocument thanaDoc = context.get("presentThana", ThanaDocument.class);
             thanaList.add(memberSourceDataMapper.map(thanaDoc));
