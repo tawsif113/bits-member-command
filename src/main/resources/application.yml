@@ -6,9 +6,9 @@ spring:
     port: 5672
     username: admin
     password: admin
-  data:
-    mongodb:
-      uri: mongodb://localhost:27017/member_command
+
+  mongodb:
+    uri: mongodb://localhost:27017/member_command
 
 server:
   port: 8080
